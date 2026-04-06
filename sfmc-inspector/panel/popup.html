@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFMC Inspector</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <div class="logo">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">SFMC <strong>Inspector</strong></span>
+    </div>
+    <div class="header-right">
+      <div id="session-badge" class="badge badge--detecting">
+        <span class="badge-dot"></span>
+        <span class="badge-label">Detecting…</span>
+      </div>
+      <button id="btn-refresh" class="icon-btn" title="Refresh session">↺</button>
+    </div>
+  </header>
+
+  <!-- ── Session info bar ───────────────────────────────────────────────────── -->
+  <div id="session-bar" class="session-bar hidden">
+    <span class="session-env" id="session-env-label">—</span>
+    <span class="session-divider">·</span>
+    <span class="session-stack" id="session-stack-label">—</span>
+  </div>
+
+  <!-- ── No-session overlay ─────────────────────────────────────────────────── -->
+  <div id="no-session-view" class="empty-state hidden">
+    <div class="empty-icon">⚡</div>
+    <p class="empty-title">No SFMC session detected</p>
+    <p class="empty-desc">Open Salesforce Marketing Cloud in another tab, then come back here.</p>
+  </div>
+
+  <!-- ── Main content ───────────────────────────────────────────────────────── -->
+  <div id="main-view" class="hidden">
+
+    <!-- Quick Search -->
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input
+        type="text"
+        id="global-search"
+        class="search-input"
+        placeholder="Search DEs, Automations, Journeys…"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd class="search-hint">⌘K</kbd>
+    </div>
+
+    <!-- Nav tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="de">
+        <span class="tab-icon">▦</span> Data Extensions
+      </button>
+      <button class="tab-btn" data-tab="automations">
+        <span class="tab-icon">⚙</span> Automations
+      </button>
+      <button class="tab-btn" data-tab="journeys">
+        <span class="tab-icon">↝</span> Journeys
+      </button>
+      <button class="tab-btn" data-tab="linter">
+        <span class="tab-icon">✦</span> Linter
+      </button>
+    </nav>
+
+    <!-- ── Tab: Data Extensions ─────────────────────────────────────────────── -->
+    <section id="tab-de" class="tab-panel active">
+      <div class="panel-toolbar">
+        <span class="record-count" id="de-count">—</span>
+        <button class="small-btn" id="btn-load-de">Load</button>
+      </div>
+
+      <div id="de-loading" class="loader-wrap hidden">
+        <div class="spinner"></div>
+        <span>Loading Data Extensions…</span>
+      </div>
+
+      <div id="de-list" class="item-list"></div>
+
+      <!-- DE Detail panel (shown when a DE is selected) -->
+      <div id="de-detail" class="detail-panel hidden">
+        <button class="back-btn" id="btn-de-back">← Back</button>
+        <div id="de-detail-content"></div>
+      </div>
+    </section>
+
+    <!-- ── Tab: Automations ──────────────────────────────────────────────────── -->
+    <section id="tab-automations" class="tab-panel">
+      <div class="panel-toolbar">
+        <span class="record-count" id="auto-count">—</span>
+        <button class="small-btn" id="btn-load-auto">Load</button>
+      </div>
+
+      <div id="auto-loading" class="loader-wrap hidden">
+        <div class="spinner"></div>
+        <span>Loading Automations…</span>
+      </div>
+
+      <div id="auto-list" class="item-list"></div>
+
+      <div id="auto-detail" class="detail-panel hidden">
+        <button class="back-btn" id="btn-auto-back">← Back</button>
+        <div id="auto-detail-content"></div>
+      </div>
+    </section>
+
+    <!-- ── Tab: Journeys ────────────────────────────────────────────────────── -->
+    <section id="tab-journeys" class="tab-panel">
+      <div class="panel-toolbar">
+        <span class="record-count" id="journey-count">—</span>
+        <button class="small-btn" id="btn-load-journeys">Load</button>
+      </div>
+
+      <div id="journey-loading" class="loader-wrap hidden">
+        <div class="spinner"></div>
+        <span>Loading Journeys…</span>
+      </div>
+
+      <div id="journey-list" class="item-list"></div>
+    </section>
+
+    <!-- ── Tab: Linter ──────────────────────────────────────────────────────── -->
+    <section id="tab-linter" class="tab-panel">
+      <div class="linter-mode-bar">
+        <button class="mode-btn active" data-mode="sql">SQL</button>
+        <button class="mode-btn" data-mode="ampscript">AMPScript</button>
+      </div>
+
+      <div class="linter-input-wrap">
+        <textarea
+          id="linter-input"
+          class="linter-textarea"
+          placeholder="Paste your SQL query or AMPScript block here…"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <div class="linter-actions">
+        <button class="primary-btn" id="btn-lint">Analyse</button>
+        <button class="small-btn" id="btn-lint-clear">Clear</button>
+      </div>
+
+      <div id="linter-results" class="linter-results hidden"></div>
+    </section>
+
+  </div>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+  <footer class="app-footer">
+    <span>SFMC Inspector · v0.1.0</span>
+    <a href="https://www.linkedin.com/in/vincenzo-boellis" target="_blank" class="footer-link">by Vincenzo Boellis ↗</a>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../shared/sfmc-api.js"></script>
+  <script src="../shared/sql-linter.js"></script>
+  <script src="../shared/ampscript-linter.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

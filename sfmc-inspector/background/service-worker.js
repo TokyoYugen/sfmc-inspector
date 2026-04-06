@@ -1,0 +1,145 @@
+/**
+ * SFMC Inspector — Service Worker
+ *
+ * Authentication: SFMC exposes a /cloud/fuelapi/ proxy on the main domain
+ * (mc.s51.exacttarget.com) that accepts REST API calls using the browser's
+ * existing session cookies. No OAuth, no token exchange needed.
+ * Discovered via reverse engineering of SFMC Companion extension.
+ */
+
+var session = {
+  hostname:       null,
+  stackKey:       null,
+  businessUnitId: null,
+  fuelBase:       null,   // https://mc.s51.exacttarget.com/cloud/fuelapi
+  isValid:        false
+};
+
+chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
+  switch (msg.type) {
+
+    case "DETECT_SESSION":
+      detectSession(msg.hostname)
+        .then(function(s) { sendResponse({ ok: true,  session: s }); })
+        .catch(function(e){ sendResponse({ ok: false, error: e.message }); });
+      return true;
+
+    case "GET_SESSION":
+      sendResponse(getSessionStatus());
+      break;
+
+    case "SFMC_API_CALL":
+      handleApiCall(msg.payload)
+        .then(function(result) { sendResponse({ ok: true, data: result }); })
+        .catch(function(err)   { sendResponse({ ok: false, error: err.message }); });
+      return true;
+  }
+  return true;
+});
+
+// ── Session detection ─────────────────────────────────────────────────────────
+
+async function detectSession(hostname) {
+  if (!hostname) throw new Error("No hostname provided");
+
+  var fuelBase = "https://" + hostname + "/cloud/fuelapi";
+
+  // Probe with a lightweight call — get BU info
+  var tabs = await chrome.tabs.query({});
+  var sfmcTab = tabs.find(function(t) {
+    return t.url && t.url.includes(hostname);
+  });
+  if (!sfmcTab) throw new Error("SFMC tab not found");
+
+  // Use scripting to make the probe call from within the tab (uses session cookies)
+  var results = await chrome.scripting.executeScript({
+    target: { tabId: sfmcTab.id },
+    func: function(fuelBase) {
+      return fetch(fuelBase + "/legacy/v1/beta/folder/0/children?$pageSize=1", {
+        credentials: "include"
+      })
+      .then(function(r) { return r.json().then(function(d) { return { status: r.status, data: d }; }); })
+      .catch(function(e) { return { error: e.message }; });
+    },
+    args: [fuelBase]
+  });
+
+  var result = results && results[0] && results[0].result;
+  console.log("[SFMC Inspector SW] Probe result:", JSON.stringify(result).substring(0, 200));
+
+  if (!result || result.error) {
+    throw new Error("Could not probe SFMC session: " + (result && result.error));
+  }
+
+  // Extract stack key from hostname: mc.s51.exacttarget.com → s51
+  var stackMatch = hostname.match(/\.(s\d+)\./i);
+
+  session.hostname       = hostname;
+  session.stackKey       = stackMatch ? stackMatch[1] : null;
+  session.fuelBase       = fuelBase;
+  session.businessUnitId = (result.data && result.data.legacyId) || null;
+  session.isValid        = result.status === 200;
+
+  chrome.storage.session.set({ sfmcSession: session });
+  console.log("[SFMC Inspector SW] Session established:", JSON.stringify(getSessionStatus()));
+
+  return getSessionStatus();
+}
+
+// ── API call — injected into SFMC tab to use session cookies ──────────────────
+
+async function handleApiCall(payload) {
+  if (!session.fuelBase) throw new Error("Session not established. Click Refresh.");
+
+  var tabs = await chrome.tabs.query({});
+  var sfmcTab = tabs.find(function(t) {
+    return t.url && t.url.includes(session.hostname);
+  });
+  if (!sfmcTab) throw new Error("SFMC tab not found. Keep the SFMC tab open.");
+
+  var results = await chrome.scripting.executeScript({
+    target: { tabId: sfmcTab.id },
+    func: function(fuelBase, endpoint, method, body) {
+      var url = fuelBase + endpoint;
+      var opts = {
+        method:      method || "GET",
+        credentials: "include",
+        headers:     { "Content-Type": "application/json" }
+      };
+      if (body) opts.body = JSON.stringify(body);
+
+      return fetch(url, opts)
+        .then(function(r) {
+          return r.text().then(function(t) {
+            return { status: r.status, text: t };
+          });
+        })
+        .catch(function(e) { return { error: e.message }; });
+    },
+    args: [session.fuelBase, payload.endpoint, payload.method || "GET", payload.body || null]
+  });
+
+  var result = results && results[0] && results[0].result;
+  if (!result || result.error) throw new Error(result ? result.error : "Script execution failed");
+  if (result.status >= 400) throw new Error("API_ERROR " + result.status + ": " + result.text.substring(0, 200));
+
+  try { return JSON.parse(result.text); }
+  catch(e) { return { raw: result.text }; }
+}
+
+// ── Session status ────────────────────────────────────────────────────────────
+
+function getSessionStatus() {
+  return {
+    isValid:        session.isValid,
+    hostname:       session.hostname,
+    stackKey:       session.stackKey,
+    fuelBase:       session.fuelBase,
+    businessUnitId: session.businessUnitId,
+    hasToken:       session.isValid
+  };
+}
+
+chrome.storage.session.get("sfmcSession", function(result) {
+  if (result.sfmcSession) session = result.sfmcSession;
+});

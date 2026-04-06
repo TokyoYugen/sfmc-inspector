@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFMC Inspector — Privacy Policy</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #1a1a2e;
+      background: #f8f9fc;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 740px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 12px;
+      padding: 48px 56px;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+    .logo-icon {
+      width: 40px; height: 40px;
+      background: #0d0e11;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: #4f9cf9;
+      font-size: 20px;
+    }
+    .logo-text { font-size: 18px; font-weight: 600; }
+    .logo-sub  { font-size: 13px; color: #666; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .date { font-size: 13px; color: #888; margin-bottom: 32px; }
+    h2 { font-size: 16px; font-weight: 600; margin: 28px 0 8px; color: #0d0e11; }
+    p  { margin-bottom: 12px; color: #374151; }
+    ul { margin: 8px 0 12px 20px; color: #374151; }
+    li { margin-bottom: 6px; }
+    .highlight {
+      background: #eff6ff;
+      border-left: 3px solid #4f9cf9;
+      border-radius: 0 6px 6px 0;
+      padding: 14px 18px;
+      margin: 20px 0;
+      font-size: 15px;
+      color: #1e3a5f;
+    }
+    a { color: #4f9cf9; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="logo">
+      <div class="logo-icon">◈</div>
+      <div>
+        <div class="logo-text">SFMC Inspector</div>
+        <div class="logo-sub">Chrome Extension</div>
+      </div>
+    </div>
+
+    <h1>Privacy Policy</h1>
+    <div class="date">Last updated: April 2026</div>
+
+    <div class="highlight">
+      <strong>Summary:</strong> SFMC Inspector does not collect, store, or transmit any personal data to external servers. All data stays within your browser and your Salesforce Marketing Cloud account.
+    </div>
+
+    <h2>What SFMC Inspector does</h2>
+    <p>SFMC Inspector is a browser extension that helps Salesforce Marketing Cloud (SFMC) developers and administrators explore Data Extensions, Automations, Journeys, and analyse SQL and AMPScript code quality — all from within the SFMC interface.</p>
+
+    <h2>Data we access</h2>
+    <p>When you use SFMC Inspector on a Salesforce Marketing Cloud page, the extension:</p>
+    <ul>
+      <li>Reads your existing browser session to authenticate with SFMC on your behalf</li>
+      <li>Makes API calls to your SFMC account to retrieve metadata (Data Extension names, Automation details, Journey structures, Query Activity SQL)</li>
+      <li>Analyses SQL and AMPScript code locally in your browser</li>
+    </ul>
+    <p>The extension only accesses data that your SFMC user account has permission to see. It cannot access more than what you can access through the standard SFMC interface.</p>
+
+    <h2>Data we do NOT collect</h2>
+    <ul>
+      <li>No personal data is collected or stored outside your browser</li>
+      <li>No data is sent to any server other than your own Salesforce Marketing Cloud instance</li>
+      <li>No analytics, tracking, or telemetry of any kind</li>
+      <li>No cookies are created beyond what SFMC itself uses</li>
+      <li>No user accounts, registration, or login is required</li>
+    </ul>
+
+    <h2>Local storage</h2>
+    <p>SFMC Inspector uses Chrome's session storage (<code>chrome.storage.session</code>) to temporarily cache your SFMC session context (hostname, stack key, and authentication token) for the duration of your browser session. This data is:</p>
+    <ul>
+      <li>Stored locally in your browser only</li>
+      <li>Cleared automatically when you close Chrome</li>
+      <li>Never transmitted to any external server</li>
+    </ul>
+
+    <h2>Third-party services</h2>
+    <p>SFMC Inspector does not use any third-party services, analytics platforms, or external APIs. The only network requests made are directly to your Salesforce Marketing Cloud account's own API endpoints (<code>*.exacttarget.com</code>, <code>*.marketingcloudapis.com</code>).</p>
+
+    <h2>Permissions</h2>
+    <p>The extension requests the following Chrome permissions:</p>
+    <ul>
+      <li><strong>cookies</strong> — to read SFMC session cookies for authentication</li>
+      <li><strong>storage</strong> — to temporarily cache session context locally</li>
+      <li><strong>activeTab / scripting</strong> — to interact with the SFMC page and make authenticated API calls</li>
+      <li><strong>tabs</strong> — to find open SFMC tabs for session detection</li>
+      <li><strong>host permissions</strong> for <code>*.exacttarget.com</code> and <code>*.marketingcloudapis.com</code> — to communicate with SFMC APIs</li>
+    </ul>
+    <p>No permission is used beyond its stated purpose.</p>
+
+    <h2>Open source</h2>
+    <p>SFMC Inspector is open source. You can inspect the full source code to verify these claims independently.</p>
+
+    <h2>Contact</h2>
+    <p>If you have questions about this privacy policy or the extension's behaviour, you can reach the author via <a href="https://www.linkedin.com/in/vincenzo-boellis" target="_blank">LinkedIn</a>.</p>
+
+    <footer>
+      SFMC Inspector is not affiliated with, endorsed by, or supported by Salesforce.<br>
+      Salesforce Marketing Cloud is a trademark of Salesforce, Inc.
+    </footer>
+
+  </div>
+</body>
+</html>
