@@ -29,7 +29,8 @@ SFMC Inspector runs inside your browser while you're logged into Salesforce Mark
 
 ## How authentication works
 
-SFMC Inspector uses the **same session your browser already has** when you're logged into SFMC. It reads the access token from the page environment (localStorage / cookies) exactly like Salesforce Inspector Reloaded does for Salesforce CRM.
+SFMC Inspector uses the **same session your browser already has** when you're logged into SFMC. It executes authenticated API calls directly inside your active SFMC tab using Chrome's scripting API — the browser's existing session is used 
+automatically, without reading or storing cookies.
 
 - ✅ No OAuth setup required
 - ✅ No credentials stored
@@ -115,7 +116,7 @@ sfmc-inspector/
 - [ ] Broken link detector for emails
 - [ ] Export metadata to JSON/CSV
 - [ ] Firefox support
-- [ ] Chrome Web Store listing
+- [x] Chrome Web Store listing (submitted)
 
 ---
 
