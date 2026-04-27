@@ -3,7 +3,7 @@
   "name": "SFMC Inspector",
   "short_name": "SFMC Inspector",
   "version": "0.1.1",
-  "description": "The definitive developer toolkit for Salesforce Marketing Cloud. Explore Data Extensions, Automations, Journeys and lint your SQL — all from within SFMC.",
+  "description": "The definitive developer toolkit for Salesforce Marketing Cloud. Explore DEs, Automations, Journeys and lint your SQL.",
   "icons": {
     "16":  "assets/icons/icon16.png",
     "32":  "assets/icons/icon32.png",
