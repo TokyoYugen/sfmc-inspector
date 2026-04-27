@@ -117,11 +117,10 @@
     <h2>Permissions</h2>
     <p>The extension requests the following Chrome permissions:</p>
     <ul>
-      <li><strong>scripting/activeTab</strong> — to execute authenticated API calls within the active SFMC tab, using the browser's existing session automatically</li>
-      <li><strong>storage</strong> — to temporarily cache session context locally</li>
-      <li><strong>activeTab / scripting</strong> — to interact with the SFMC page and make authenticated API calls</li>
+      <li><strong>scripting / activeTab</strong> — to execute authenticated API calls directly within the active SFMC tab; the browser's existing session is used automatically, without reading or storing cookies</li>
+      <li><strong>storage</strong> — to temporarily cache session context locally in the browser</li>
       <li><strong>tabs</strong> — to find open SFMC tabs for session detection</li>
-      <li><strong>host permissions</strong> for <code>*.exacttarget.com</code> and <code>*.marketingcloudapis.com</code> — to communicate with SFMC APIs</li>
+      <li><strong>host permissions</strong> for <code>*.exacttarget.com</code>, <code>*.marketingcloudapis.com</code>, <code>*.marketingcloud.com</code> and <code>*.marketingcloudapps.com</code> — to communicate with SFMC APIs</li>
     </ul>
     <p>No permission is used beyond its stated purpose.</p>
 
