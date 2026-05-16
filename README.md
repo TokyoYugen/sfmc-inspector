@@ -2,7 +2,7 @@
 
 > The definitive developer toolkit for Salesforce Marketing Cloud Engagement.
 
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![Version](https://img.shields.io/badge/version-0.1.2-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Manifest](https://img.shields.io/badge/manifest-v3-orange)
 
