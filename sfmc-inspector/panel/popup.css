@@ -493,6 +493,19 @@ body {
 .relation-item-name { font-weight: 500; color: var(--text-0); }
 .relation-item-type { font-size: 10px; color: var(--text-2); font-family: var(--mono); margin-top: 2px; }
 
+/* Clickable variant — used for automations that can open their detail panel */
+.relation-item--clickable {
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+}
+.relation-item--clickable:hover {
+  background: var(--bg-3);
+  border-color: var(--border-hi);
+}
+.relation-item--clickable:active {
+  background: var(--bg-4);
+}
+
 /* SQL preview inside detail */
 .sql-block {
   background: var(--bg-0);

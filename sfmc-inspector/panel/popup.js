@@ -203,13 +203,6 @@
     renderJourneyList(q);
   });
 
-  document.addEventListener("keydown", function (e) {
-    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-      e.preventDefault();
-      els.globalSearch.focus();
-    }
-  });
-
   // ─── DATA EXTENSIONS ─────────────────────────────────────────────────────────
 
   function renderDeList(query) {
@@ -335,13 +328,21 @@
           '<div class="detail-section">' +
             '<div class="detail-section-title">Automations writing to this DE (' + matches.length + ")</div>" +
             matches.map(function (a) {
-              return '<div class="relation-item">' +
+              return '<div class="relation-item relation-item--clickable" data-auto-id="' + escHtml(a.id) + '" title="Open automation detail">' +
                 '<div class="relation-item-name">' + escHtml(a.name) + "</div>" +
                 '<div class="relation-item-type">Query: ' + escHtml(a.queryName) + " · Status: " + escHtml(a.status) + "</div>" +
                 (a.sql ? '<div class="sql-block">' + escHtml(a.sql.substring(0, 300)) + (a.sql.length > 300 ? "\n…" : "") + "</div>" : "") +
               "</div>";
             }).join("") +
           "</div>";
+
+        // Wire clickable automation items → open automation detail in the Automations tab
+        sec.querySelectorAll(".relation-item--clickable").forEach(function (el) {
+          el.addEventListener("click", function () {
+            var autoId = el.getAttribute("data-auto-id");
+            if (autoId) openAutomationFromDe(autoId);
+          });
+        });
       }
     }).catch(function () {
       var sec = $("de-automations-section");
@@ -437,6 +438,7 @@
 
               if (match) {
                 matches.push({
+                  id:        detail.id || auto.id || auto.automationId || "",
                   name:      detail.name || auto.name || "—",
                   status:    detail.status || auto.status || "—",
                   queryName: act.name || "Query Activity",
@@ -453,6 +455,49 @@
 
       return Promise.all(detailPromises).then(function () { return matches; });
     });
+  }
+
+  // ─── Open Automation detail from DE detail view ───────────────────────────────
+
+  function mapRawAutomation(raw) {
+    return {
+      id:          raw.id || raw.automationId || "",
+      name:        raw.name || "—",
+      key:         raw.key  || raw.customerKey || "",
+      status:      raw.status || "—",
+      schedule:    raw.schedule ? (raw.schedule.scheduleTypeId === 1 ? "Scheduled" : "Triggered") : "—",
+      lastRunTime: raw.lastRunTime || null
+    };
+  }
+
+  function openAutomationFromDe(autoId) {
+    var rawList = state.allAutomations || [];
+    var rawAuto = null;
+    for (var i = 0; i < rawList.length; i++) {
+      var a = rawList[i];
+      if ((a.id || a.automationId) === autoId) { rawAuto = a; break; }
+    }
+    if (!rawAuto) return;
+
+    // If the Automations tab list has never been populated, hydrate it from the
+    // cache so pressing "Back" lands on a useful list, not an empty one.
+    if (!state.automations.loaded && rawList.length > 0) {
+      var items = rawList.map(mapRawAutomation);
+      state.automations.items  = items;
+      state.automations.loaded = true;
+      state.allAutomations     = rawList;
+      els.autoCount.textContent = items.length + " automations";
+      renderAutoList(els.globalSearch.value.trim());
+    }
+
+    // Close the DE detail panel so going back to the DE tab is clean
+    els.deDetail.classList.add("hidden");
+    els.deList.classList.remove("hidden");
+    document.querySelector(".panel-toolbar").classList.remove("hidden");
+
+    // Switch to the Automations tab and open the detail
+    switchTab("automations");
+    showAutoDetail(mapRawAutomation(rawAuto));
   }
 
   // ─── Journey → DE mapping ────────────────────────────────────────────────────
